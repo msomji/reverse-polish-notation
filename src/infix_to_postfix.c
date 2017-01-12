@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "validate_infix.h"
+#include "error_messages.h"
 
 char *postfixArray;
 char *stack;
@@ -67,8 +68,23 @@ void set_max_array_size(int length) {
   postfixArray = malloc(sizeof(char) * length);
   stack = malloc(sizeof(char) * length);
 }
+
+void exit_and_print_error(int err) {
+  for (int j =0; j < 5; j++) {
+    if(number_to_message[j].num == err) {
+      printf("[DEBUG] Error: %s\n", number_to_message[j].error);
+      exit(err);
+    }
+  }
+}
+
 const char *convert_to_postfix(char *infixString) {
-  validate_infix(infixString);
+  int validity = validate_infix(infixString);
+  if (validity != 0) {
+    exit_and_print_error(validity);
+  }
+
+  /* validate_infix(infixString); */
   set_max_array_size(strlen(infixString));
 
   while (infixString[infixStringPosition] != '\0') {
